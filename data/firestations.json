@@ -1,0 +1,7 @@
+{
+  "firestations": [
+    {"name": "Tamluk Fire Station", "location": [22.2960, 87.9230]},
+    {"name": "Haldia Fire Station", "location": [22.0320, 88.0610]},
+    {"name": "Contai Fire Station", "location": [21.7795, 87.7510]}
+  ]
+}

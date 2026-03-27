@@ -1,0 +1,16 @@
+body{
+font-family: Arial;
+text-align:center;
+}
+
+#map{
+width:90%;
+height:600px;
+margin:auto;
+border:2px solid black;
+}
+
+#dashboard{
+font-size:18px;
+margin-bottom:10px;
+}

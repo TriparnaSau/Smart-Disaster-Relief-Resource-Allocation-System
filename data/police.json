@@ -1,0 +1,7 @@
+{
+  "police": [
+    {"name": "Tamluk Police Station", "location": [22.3000, 87.9250]},
+    {"name": "Haldia Police Station", "location": [22.0280, 88.0600]},
+    {"name": "Contai Police Station", "location": [21.7770, 87.7490]}
+  ]
+}

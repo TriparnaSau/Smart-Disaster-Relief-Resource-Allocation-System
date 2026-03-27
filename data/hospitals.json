@@ -1,0 +1,7 @@
+{
+  "hospitals": [
+    {"name": "Tamluk District Hospital", "location": [22.2971, 87.9242]},
+    {"name": "Haldia Sub Divisional Hospital", "location": [22.0250, 88.0583]},
+    {"name": "Contai Sub Divisional Hospital", "location": [21.7780, 87.7520]}
+  ]
+}

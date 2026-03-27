@@ -1,0 +1,7 @@
+{
+  "ambulances": [
+    {"id": "AMB001", "location": [22.2975, 87.9250], "status": "available"},
+    {"id": "AMB002", "location": [22.0300, 88.0605], "status": "available"},
+    {"id": "AMB003", "location": [21.7790, 87.7500], "status": "available"}
+  ]
+}
