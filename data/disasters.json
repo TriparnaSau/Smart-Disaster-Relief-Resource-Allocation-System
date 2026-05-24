@@ -1,0 +1,14 @@
+{
+  "disasters": [
+    {
+      "name": "Flood",
+      "lat": 22.3,
+      "lon": 87.9
+    },
+    {
+      "name": "Cyclone",
+      "lat": 21.8,
+      "lon": 87.7
+    }
+  ]
+}

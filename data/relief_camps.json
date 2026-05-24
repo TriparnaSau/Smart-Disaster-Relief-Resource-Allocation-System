@@ -1,0 +1,7 @@
+{
+  "relief_camps": [
+    {"name": "Tamluk Relief Camp", "location": [22.30, 87.92]},
+    {"name": "Haldia Shelter Camp", "location": [22.02, 88.06]},
+    {"name": "Contai Flood Shelter", "location": [21.78, 87.75]}
+  ]
+}

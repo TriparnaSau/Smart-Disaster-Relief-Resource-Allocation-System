@@ -1,89 +1,251 @@
-var map = L.map('map').setView([22.1, 87.9], 9);
+// ---------------- MAP INITIALIZATION ----------------
 
-var totalEmergencies = 0;
+var map = L.map('map').setView([22.3, 87.9], 10);
 
 L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: '© OpenStreetMap contributors'
+    }
 ).addTo(map);
 
+
+// ---------------- SHOW ALL SERVICES ----------------
 
 fetch("/services")
 .then(res => res.json())
 .then(data => {
 
-    data.hospitals.forEach(h=>{
+    // Hospitals
+    data.hospitals.forEach(h => {
+
         L.marker(h.location)
-        .addTo(map)
-        .bindPopup("Hospital: "+h.name)
-    })
+            .addTo(map)
+            .bindPopup("Hospital: " + h.name);
 
-    data.firestations.forEach(f=>{
+    });
+
+    // Fire Stations
+    data.firestations.forEach(f => {
+
         L.marker(f.location)
-        .addTo(map)
-        .bindPopup("Fire Station: "+f.name)
-    })
+            .addTo(map)
+            .bindPopup("Fire Station: " + f.name);
 
-    data.police.forEach(p=>{
+    });
+
+    // Police
+    data.police.forEach(p => {
+
         L.marker(p.location)
-        .addTo(map)
-        .bindPopup("Police Station: "+p.name)
-    })
+            .addTo(map)
+            .bindPopup("Police: " + p.name);
 
-})
+    });
 
-
-fetch("/ambulances")
-.then(res=>res.json())
-.then(data=>{
-
-    data.forEach(a=>{
+    // Ambulances
+    data.ambulances.forEach(a => {
 
         L.marker(a.location)
-        .addTo(map)
-        .bindPopup("Ambulance "+a.id)
+            .addTo(map)
+            .bindPopup("Ambulance: " + a.id);
 
-    })
+    });
 
-})
+    // Relief Camps
+    data.relief_camps.forEach(c => {
+
+        L.marker(c.location)
+            .addTo(map)
+            .bindPopup("Relief Camp: " + c.name);
+
+    });
+
+});
 
 
-map.on("click", function(e){
+// ---------------- MAP CLICK EVENT ----------------
 
-    var lat = e.latlng.lat
-    var lon = e.latlng.lng
+map.on("click", function(e) {
 
-    totalEmergencies++
+    const lat = e.latlng.lat;
+    const lon = e.latlng.lng;
 
-    document.getElementById("total").innerText = totalEmergencies
+    handleEmergency(lat, lon);
 
-    fetch("/emergency",{
+});
 
-        method:"POST",
 
-        headers:{
-            "Content-Type":"application/json"
+// ---------------- EMERGENCY FUNCTION ----------------
+
+function handleEmergency(lat, lon) {
+
+    const disasterType =
+        document.getElementById("type").value;
+
+    const severity =
+        document.getElementById("severity").value;
+
+    fetch("/emergency", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
         },
 
-        body:JSON.stringify({
-            lat:lat,
-            lon:lon
+        body: JSON.stringify({
+
+            latitude: lat,
+            longitude: lon,
+            disaster: disasterType,
+            severity: severity
+
         })
 
     })
-    .then(res=>res.json())
-    .then(data=>{
 
-        var amb = data.ambulance
+    .then(res => res.json())
 
-        L.polyline([
-            [amb.location[0], amb.location[1]],
-            [lat, lon]
-        ],{
-            color:"red"
-        }).addTo(map)
+    .then(data => {
 
-        alert("Ambulance "+amb.id+" dispatched!")
+        console.log(data);
+
+        // ---------------- USER LOCATION ----------------
+
+        L.circleMarker([lat, lon], {
+
+            radius: 10,
+            color: "red",
+            fillColor: "red",
+            fillOpacity: 1
+
+        })
+        .addTo(map)
+        .bindPopup("Emergency Location")
+        .openPopup();
+
+
+        // ---------------- AMBULANCE ----------------
+
+        if (data.ambulance) {
+
+            L.marker(data.ambulance.location)
+                .addTo(map)
+                .bindPopup("Nearest Ambulance");
+
+        }
+
+        if (data.ambulance_route) {
+
+            L.polyline(
+                data.ambulance_route,
+                {
+                    color: "green",
+                    weight: 5
+                }
+            ).addTo(map);
+
+        }
+
+
+        // ---------------- HOSPITAL ----------------
+
+        if (data.hospital) {
+
+            L.marker(data.hospital.location)
+                .addTo(map)
+                .bindPopup("Nearest Hospital");
+
+        }
+
+        if (data.hospital_route) {
+
+            L.polyline(
+                data.hospital_route,
+                {
+                    color: "blue",
+                    weight: 5
+                }
+            ).addTo(map);
+
+        }
+
+
+        // ---------------- FIRE STATION ----------------
+
+        if (data.firestation) {
+
+            L.marker(data.firestation.location)
+                .addTo(map)
+                .bindPopup("Nearest Fire Station");
+
+        }
+
+        if (data.firestation_route) {
+
+            L.polyline(
+                data.firestation_route,
+                {
+                    color: "orange",
+                    weight: 5
+                }
+            ).addTo(map);
+
+        }
+
+
+        // ---------------- POLICE ----------------
+
+        if (data.police) {
+
+            L.marker(data.police.location)
+                .addTo(map)
+                .bindPopup("Nearest Police");
+
+        }
+
+        if (data.police_route) {
+
+            L.polyline(
+                data.police_route,
+                {
+                    color: "black",
+                    weight: 5
+                }
+            ).addTo(map);
+
+        }
+
+
+        // ---------------- RELIEF CAMP ----------------
+
+        if (data.relief_camp) {
+
+            L.marker(data.relief_camp.location)
+                .addTo(map)
+                .bindPopup("Nearest Relief Camp");
+
+        }
+
+        if (data.relief_camp_route) {
+
+            L.polyline(
+                data.relief_camp_route,
+                {
+                    color: "purple",
+                    weight: 5
+                }
+            ).addTo(map);
+
+        }
 
     })
 
-})
+    .catch(error => {
+
+        console.log(error);
+
+    });
+
+}
