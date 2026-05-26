@@ -2,6 +2,22 @@
 
 var map = L.map('map').setView([22.3, 87.9], 10);
 
+// ---------------- EMERGENCY LAYER GROUP ----------------
+
+const emergencyLayerGroup = L.layerGroup().addTo(map);
+
+// ---------------- AMBULANCE EMOJI ICON ----------------
+
+var ambulanceIcon = L.divIcon({
+
+    html: "🚑",
+
+    className: "ambulance-emoji",
+
+    iconSize: [30, 30]
+
+});
+
 L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
@@ -111,6 +127,8 @@ function handleEmergency(lat, lon) {
 
             console.log(data);
 
+
+
             // ---------------- TOTAL EMERGENCIES COUNTER ----------------
 
             let totalElement =
@@ -121,6 +139,53 @@ function handleEmergency(lat, lon) {
 
             totalElement.innerText =
                 currentTotal + 1;
+            // ---------------- DISASTER COUNTERS ----------------
+
+            if (severity === "High") {
+
+                let high =
+                    document.getElementById("highCount");
+
+                high.innerText =
+                    parseInt(high.innerText) + 1;
+            }
+
+            if (disasterType === "Flood") {
+
+                let flood =
+                    document.getElementById("floodCount");
+
+                flood.innerText =
+                    parseInt(flood.innerText) + 1;
+            }
+
+            if (disasterType === "Fire") {
+
+                let fire =
+                    document.getElementById("fireCount");
+
+                fire.innerText =
+                    parseInt(fire.innerText) + 1;
+            }
+
+            if (disasterType === "Cyclone") {
+
+                let cyclone =
+                    document.getElementById("cycloneCount");
+
+                cyclone.innerText =
+                    parseInt(cyclone.innerText) + 1;
+            }
+
+            if (disasterType === "Road Accident") {
+
+                let accident =
+                    document.getElementById("accidentCount");
+
+                accident.innerText =
+                    parseInt(accident.innerText) + 1;
+            }
+
 
             // ---------------- USER LOCATION ----------------
 
@@ -132,41 +197,55 @@ function handleEmergency(lat, lon) {
                 fillOpacity: 1
 
             })
-
-            // ---------------- USER LOCATION ----------------
-
-            L.circleMarker([lat, lon], {
-
-                radius: 10,
-                color: "red",
-                fillColor: "red",
-                fillOpacity: 1
-
-            })
-                .addTo(map)
+                .addTo(emergencyLayerGroup)
                 .bindPopup("Emergency Location")
                 .openPopup();
 
 
-            // ---------------- AMBULANCE ----------------
-
-            if (data.ambulance) {
-
-                L.marker(data.ambulance.location)
-                    .addTo(map)
-                    .bindPopup("Nearest Ambulance");
-
-            }
+            // ---------------- MOVING AMBULANCE ----------------
 
             if (data.ambulance_route) {
-
                 L.polyline(
+
                     data.ambulance_route,
+
                     {
                         color: "green",
                         weight: 5
                     }
-                ).addTo(map);
+
+                ).addTo(emergencyLayerGroup);
+
+                let ambulanceMarker = L.marker(
+
+                    data.ambulance_route[0],
+
+                    {
+                        icon: ambulanceIcon
+                    }
+
+                ).addTo(emergencyLayerGroup);
+
+                let index = 0;
+
+                let moveAmbulance = setInterval(() => {
+
+                    index++;
+
+                    if (index >= data.ambulance_route.length) {
+
+                        clearInterval(moveAmbulance);
+
+                        return;
+                    }
+
+                    ambulanceMarker.setLatLng(
+
+                        data.ambulance_route[index]
+
+                    );
+
+                }, 100);
 
             }
 
@@ -189,7 +268,7 @@ function handleEmergency(lat, lon) {
                         color: "blue",
                         weight: 5
                     }
-                ).addTo(map);
+                ).addTo(emergencyLayerGroup);
 
             }
 
@@ -212,8 +291,7 @@ function handleEmergency(lat, lon) {
                         color: "orange",
                         weight: 5
                     }
-                ).addTo(map);
-
+                ).addTo(emergencyLayerGroup);
             }
 
 
@@ -235,8 +313,7 @@ function handleEmergency(lat, lon) {
                         color: "black",
                         weight: 5
                     }
-                ).addTo(map);
-
+                ).addTo(emergencyLayerGroup);
             }
 
 
@@ -258,7 +335,7 @@ function handleEmergency(lat, lon) {
                         color: "purple",
                         weight: 5
                     }
-                ).addTo(map);
+                ).addTo(emergencyLayerGroup);
 
             }
 

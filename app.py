@@ -10,15 +10,18 @@ from algorithms.dispatch import nearest_vehicle
 app = Flask(__name__)
 
 # ---------------- LOAD ROAD GRAPH ----------------
+
 graph = load_graph()
 
 
 # ---------------- ROAD ROUTE FUNCTION ----------------
+
 def get_road_route(start_location, end_location):
 
     try:
 
-        # Find nearest nodes
+        # Find nearest graph nodes
+
         start_node = ox.distance.nearest_nodes(
             graph,
             start_location[1],
@@ -32,6 +35,7 @@ def get_road_route(start_location, end_location):
         )
 
         # Find shortest path
+
         route = nx.shortest_path(
             graph,
             start_node,
@@ -42,6 +46,7 @@ def get_road_route(start_location, end_location):
         route_coordinates = []
 
         # Convert graph nodes to coordinates
+
         for node in route:
 
             lat = graph.nodes[node]["y"]
@@ -55,35 +60,51 @@ def get_road_route(start_location, end_location):
 
         print("ROUTE ERROR:", e)
 
-        # Fallback straight line
+        # Fallback straight line route
+
         return [
             [start_location[0], start_location[1]],
             [end_location[0], end_location[1]]
         ]
 
 
-# ---------------- LOAD DATA ----------------
-hospitals = load_json("data/hospitals.json")["hospitals"]
+# ---------------- LOAD JSON DATA ----------------
 
-firestations = load_json("data/firestations.json")["firestations"]
+hospitals = load_json(
+    "data/hospitals.json"
+)["hospitals"]
 
-police = load_json("data/police.json")["police"]
+firestations = load_json(
+    "data/firestations.json"
+)["firestations"]
 
-ambulances = load_json("data/ambulances.json")["ambulances"]
+police = load_json(
+    "data/police.json"
+)["police"]
 
-relief_camps = load_json("data/relief_camps.json")["relief_camps"]
+ambulances = load_json(
+    "data/ambulances.json"
+)["ambulances"]
 
-disasters = load_json("data/disasters.json")["disasters"]
+relief_camps = load_json(
+    "data/relief_camps.json"
+)["relief_camps"]
+
+disasters = load_json(
+    "data/disasters.json"
+)["disasters"]
 
 
 # ---------------- HOME PAGE ----------------
+
 @app.route("/")
 def home():
 
     return render_template("index.html")
 
 
-# ---------------- SERVICES ----------------
+# ---------------- SERVICES API ----------------
+
 @app.route("/services")
 def services():
 
@@ -103,6 +124,7 @@ def services():
 
 
 # ---------------- EMERGENCY RESPONSE ----------------
+
 @app.route("/emergency", methods=["POST"])
 def emergency():
 
@@ -120,6 +142,7 @@ def emergency():
     response = {}
 
     # ---------------- FLOOD ----------------
+
     if disaster == "Flood":
 
         ambulance = nearest_vehicle(
@@ -159,6 +182,7 @@ def emergency():
         )
 
     # ---------------- CYCLONE ----------------
+
     elif disaster == "Cyclone":
 
         ambulance = nearest_vehicle(
@@ -210,6 +234,7 @@ def emergency():
         )
 
     # ---------------- FIRE ----------------
+
     elif disaster == "Fire":
 
         firestation = nearest_vehicle(
@@ -237,6 +262,7 @@ def emergency():
         )
 
     # ---------------- ROAD ACCIDENT ----------------
+
     elif disaster == "Road Accident":
 
         ambulance = nearest_vehicle(
@@ -281,13 +307,15 @@ def emergency():
             "error": "Invalid disaster type"
         })
 
-    # Add severity
+    # Add severity to response
+
     response["severity"] = severity
 
     return jsonify(response)
 
 
-# ---------------- RELIEF CAMP ----------------
+# ---------------- DISASTER RELIEF ----------------
+
 @app.route("/disaster", methods=["POST"])
 def disaster():
 
@@ -304,11 +332,14 @@ def disaster():
     )
 
     return jsonify({
+
         "relief_camp": nearest_camp
+
     })
 
 
 # ---------------- RUN APP ----------------
+
 if __name__ == "__main__":
 
     app.run(debug=True)
